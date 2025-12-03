@@ -1,0 +1,2 @@
+# Cisco-ASA-Firewall-Integration-with-Multi-Area-OSPF-and-Segmented-Network
+This project is a full enterprise-grade network simulation built in Cisco Packet Tracer, implementing Cisco ASA 5506-X, OSPF dynamic routing, DMZ segmentation, internal user LAN, server networks, and secure firewall zoning.   It demonstrates core networking concepts such as routing, security levels, static routes, and VLAN-based segmentation
