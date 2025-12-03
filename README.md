@@ -49,7 +49,7 @@ Workstation Nodes:         4
 ## 🖼️ Network Topology
 
 <div align="center">
-  <img src="assets/topology-full.png" alt="Complete Enterprise Network Architecture" width="1000"/>
+  <img src="assets/topology.png" alt="Complete Enterprise Network Architecture" width="1000"/>
   <p><em>Multi-zone enterprise network with ASA firewall, OSPF backbone, and DMZ infrastructure</em></p>
 </div>
 
@@ -581,23 +581,13 @@ Routing Protocol is "ospf 10"
 </div>
 
 <div align="center">
-  <img src="assets/asa-interface-config.png" alt="ASA Interface Configuration" width="850"/>
+  <img src="assets/CLI.png" alt="ASA Interface Configuration" width="850"/>
   <p><em>Three-zone interface configuration with security levels</em></p>
 </div>
 
 <div align="center">
-  <img src="assets/asa-routing-config.png" alt="ASA Static Routing" width="850"/>
+  <img src="assets/CLI1.png" alt="ASA Static Routing" width="850"/>
   <p><em>Static routes configuration for OSPF network access</em></p>
-</div>
-
-<div align="center">
-  <img src="assets/ospf-router-config.png" alt="OSPF Router Configuration" width="850"/>
-  <p><em>OSPF network advertisement and router-id configuration</em></p>
-</div>
-
-<div align="center">
-  <img src="assets/ospf-neighbor-verification.png" alt="OSPF Neighbor Verification" width="850"/>
-  <p><em>OSPF neighbor adjacency and routing table verification</em></p>
 </div>
 
 ---
