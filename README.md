@@ -1,5 +1,4 @@
 ---
-
 ## 📡 Topology Overview
 
 The network contains several interconnected segments:
@@ -43,7 +42,6 @@ OSPF is configured between:
 - Router on 20.20.20.x segment
 
 The ASA handles static routes pointing towards the OSPF backbone router.
-
 ---
 
 ## 📸 Topology Preview
