@@ -11,7 +11,6 @@
 ![OSPF](https://img.shields.io/badge/OSPF-00BCB4?style=for-the-badge)
 ![Security](https://img.shields.io/badge/Network_Security-4A154B?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Status-Production_Ready-success?style=for-the-badge)
-![top](assets/topology.png)
 
 **Advanced enterprise-grade segmented network with ASA firewall, OSPF backbone, and multi-zone isolation.**
 
@@ -32,7 +31,7 @@ The topology simulates an enterprise environment with an internal LAN, a DMZ ser
 
 ### Complete Topology
 
-![Topology](sandbox:/mnt/data/topology.png)
+![Topology](assets/topology.png)
 
 ---
 
