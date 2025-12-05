@@ -1,3 +1,5 @@
+Saya akan membantu memperbaiki README dengan konfigurasi IP yang benar. Berikut adalah versi yang sudah diperbarui:
+
 # 🌐 Enterprise Network Security Infrastructure
 ## Multi-Zone Cisco ASA Firewall with OSPF Routing Protocol
 
@@ -24,7 +26,7 @@
 This project demonstrates a **production-ready enterprise network security infrastructure** implementing Cisco ASA 5506-X firewall with advanced features:
 
 ### 🎯 **Core Implementation**
-- **Zone-Based Security Architecture** - Three-tier security model (IN/DMZ/OUT) with granular access control
+- **Zone-Based Security Architecture** - Three-tier security model (INSIDE/DMZ/OUTSIDE) with granular access control
 - **Dynamic Routing Protocol** - OSPFv2 Area 0 for scalable network connectivity
 - **Demilitarized Zone (DMZ)** - Isolated server farm for public-facing services
 - **Static & Dynamic Routing Integration** - Hybrid routing architecture for enterprise scalability
@@ -35,7 +37,7 @@ This project demonstrates a **production-ready enterprise network security infra
 ```
 Total Network Segments:    4
 Routing Protocol:          OSPF Area 0
-Security Zones:            3 (IN/DMZ/OUT)
+Security Zones:            3 (INSIDE/DMZ/OUTSIDE)
 Routers Deployed:          3 (Cisco 2911)
 Switches:                  2 (Cisco 2960-24TT)
 Firewall:                  1 (Cisco ASA 5506-X)
@@ -48,10 +50,9 @@ Workstation Nodes:         4
 
 ## 🖼️ Network Topology
 
-<div align="center">
-  <img src="assets/topology.png" alt="Complete Enterprise Network Architecture" width="1000"/>
-  <p><em>Multi-zone enterprise network with ASA firewall, OSPF backbone, and DMZ infrastructure</em></p>
-</div>
+### Complete Network Architecture
+![Network Topology](assets/topology.png)
+*Multi-zone enterprise network with ASA firewall, OSPF backbone, and DMZ infrastructure*
 
 ### 🏗️ Architecture Overview
 
@@ -64,17 +65,17 @@ Workstation Nodes:         4
                     ┌───────────────────┴───────────────────┐
                     │                                       │
               [OSPF Router]                          [ASA 5506-X]
-             20.20.20.0/24                          Gi1/3 (OUT)
+             20.20.20.0/24                          Gi1/3 (OUTSIDE)
                     │                               Security: 0
                     │                                      │
             ┌───────┴────────┐                   ┌────────┴────────┐
             │                │                   │                 │
-      [Router2]         [Router1]          Gi1/1 (IN)        Gi1/2 (DMZ)
-    10.10.10.0/24     192.168.100.0/25    Security: 10      Security: 20
+      [Router2]         [Router1]          Gi1/1 (INSIDE)    Gi1/2 (DMZ)
+    10.10.10.0/24     192.168.100.0/24    Security: 100     Security: 50
             │                │                   │                 │
         [PC4]          [Switch 2960]       [Switch 2960]     [DMZ Servers]
                        PC0, PC1, PC2              │           S1, S2, S3
-                                            192.168.100.0/25  172.16.10.0/24
+                                            192.168.10.0/24   172.16.10.0/24
 ```
 
 ---
@@ -87,22 +88,22 @@ Workstation Nodes:         4
 
 | Security Zone | Interface | Security Level | Trust Level | Purpose |
 |:-------------:|:---------:|:--------------:|:-----------:|:--------|
-| 🟢 **IN** | Gi1/1 | **10** | Highest | Internal corporate network |
-| 🟡 **DMZ** | Gi1/2 | **20** | Medium | Public-facing servers |
-| 🔴 **OUT** | Gi1/3 | **5** | Lowest | Internet gateway |
+| 🟢 **INSIDE** | Gi1/1 | **100** | Highest | Internal corporate network |
+| 🟡 **DMZ** | Gi1/2 | **50** | Medium | Public-facing servers |
+| 🔴 **OUTSIDE** | Gi1/3 | **0** | Lowest | Internet gateway |
 
 </div>
 
 ### Security Policy Matrix
 
 ```
-┌─────────┬──────────┬──────────┬──────────┐
-│ From/To │    IN    │   DMZ    │   OUT    │
-├─────────┼──────────┼──────────┼──────────┤
-│   IN    │    ✓     │    ✓     │    ✓     │
-│   DMZ   │    ✗     │    ✓     │    ✓     │
-│   OUT   │    ✗     │    ✗     │    ✓     │
-└─────────┴──────────┴──────────┴──────────┘
+┌───────────┬──────────┬──────────┬──────────┐
+│ From/To   │  INSIDE  │   DMZ    │ OUTSIDE  │
+├───────────┼──────────┼──────────┼──────────┤
+│  INSIDE   │    ✓     │    ✓     │    ✓     │
+│   DMZ     │    ✗     │    ✓     │    ✓     │
+│  OUTSIDE  │    ✗     │    ✗     │    ✓     │
+└───────────┴──────────┴──────────┴──────────┘
 
 ✓ = Allowed by default (higher → lower security)
 ✗ = Denied by default (requires ACL)
@@ -110,62 +111,62 @@ Workstation Nodes:         4
 
 ### Traffic Flow Control
 
-- **IN → DMZ**: ✅ Management access to DMZ servers
-- **IN → OUT**: ✅ Internet access for internal users
-- **DMZ → OUT**: ✅ Servers can access internet (updates, patches)
-- **DMZ → IN**: ❌ **BLOCKED** - Servers cannot reach internal network
-- **OUT → IN**: ❌ **BLOCKED** - Internet cannot access internal network
-- **OUT → DMZ**: ⚠️ **CONTROLLED** - Port forwarding required for public services
+- **INSIDE → DMZ**: ✅ Management access to DMZ servers
+- **INSIDE → OUTSIDE**: ✅ Internet access for internal users
+- **DMZ → OUTSIDE**: ✅ Servers can access internet (updates, patches)
+- **DMZ → INSIDE**: ❌ **BLOCKED** - Servers cannot reach internal network
+- **OUTSIDE → INSIDE**: ❌ **BLOCKED** - Internet cannot access internal network
+- **OUTSIDE → DMZ**: ⚠️ **CONTROLLED** - Port forwarding required for public services
 
 ---
 
 ## 🌍 Network Segments
 
-### 🔹 **Segment 1: Internal LAN (IN Zone)**
+### 🔹 **Segment 1: Internal LAN (INSIDE Zone)**
 
 **Network Information:**
 ```yaml
-Network:          192.168.100.0/25
-Subnet Mask:      255.255.255.128
-Gateway:          ASA Gi1/1 (192.168.100.1)
-Security Level:   10 (Trusted)
+Network:          192.168.10.0/24
+Subnet Mask:      255.255.255.0
+Gateway:          ASA Gi1/1 (192.168.10.1)
+Security Level:   100 (Trusted)
 VLAN:             Native
 Devices:          PC0, PC1, PC2
 Switch:           Cisco 2960-24TT
+OSPF Router:      10.10.10.1
 ```
 
 **Connected Devices:**
 | Device | Interface | IP Address | Default Gateway |
 |--------|-----------|------------|-----------------|
-| PC0 | Fa0 | 192.168.100.2 | 192.168.100.1 |
-| PC1 | Fa0 | 192.168.100.3 | 192.168.100.1 |
-| PC2 | Fa0 | 192.168.100.4 | 192.168.100.1 |
-| Switch | VLAN1 | 192.168.100.254 | 192.168.100.1 |
+| PC0 | Fa0 | 192.168.10.2 | 192.168.10.1 |
+| PC1 | Fa0 | 192.168.10.3 | 192.168.10.1 |
+| PC2 | Fa0 | 192.168.10.4 | 192.168.10.1 |
+| Switch | VLAN1 | 192.168.10.254 | 192.168.10.1 |
 
 **Purpose:** Corporate workstations, internal users, protected resources
 
 ---
 
-### 🔹 **Segment 2: User Network (OSPF Area 0)**
+### 🔹 **Segment 2: OUTSIDE Network**
 
 **Network Information:**
 ```yaml
-Network:          10.10.10.0/24
+Network:          192.168.100.0/24
 Subnet Mask:      255.255.255.0
-Gateway:          Router2 (10.10.10.1)
-Router Model:     Cisco 2911
-OSPF Area:        0
-Protocol:         OSPFv2
-Devices:          PC4
+Gateway:          ASA Gi1/3 (192.168.100.1)
+Security Level:   0 (Untrusted)
+OSPF Router:      20.20.20.1
+Purpose:          External connectivity to OSPF backbone
 ```
 
 **Router Configuration:**
 | Interface | IP Address | Connected To | OSPF Network |
 |-----------|------------|--------------|--------------|
-| Fa0/0 | 10.10.10.1 | PC4 | 10.10.10.0/24 |
-| Fa0/1 | 20.20.20.2 | OSPF Backbone | 20.20.20.0/24 |
+| ASA Gi1/3 | 192.168.100.1 | Router (OUTSIDE) | 192.168.100.0/24 |
+| Router Gi0/0 | 20.20.20.1 | OSPF Backbone | 20.20.20.0/24 |
 
-**Purpose:** Secondary user segment with dynamic routing capability
+**Purpose:** Connection to OSPF routing domain and external networks
 
 ---
 
@@ -176,7 +177,7 @@ Devices:          PC4
 Network:          172.16.10.0/24
 Subnet Mask:      255.255.255.0
 Gateway:          ASA Gi1/2 (172.16.10.1)
-Security Level:   20 (Semi-Trusted)
+Security Level:   50 (Semi-Trusted)
 Server Count:     3
 Purpose:          Public-facing services
 ```
@@ -192,28 +193,26 @@ Purpose:          Public-facing services
 
 ---
 
-### 🔹 **Segment 4: Public Network (OUT Zone)**
+### 🔹 **Segment 4: User Network (OSPF Area 0)**
 
 **Network Information:**
 ```yaml
-Network:          50.50.50.0/24
+Network:          10.10.10.0/24
 Subnet Mask:      255.255.255.0
-Gateway:          Router4 (50.50.50.1)
-Security Level:   5 (Untrusted)
-ISP Connection:   Simulated Internet
-Purpose:          External connectivity
+Gateway:          Router (10.10.10.1)
+Router Model:     Cisco 2911
+OSPF Area:        0
+Protocol:         OSPFv2
+Devices:          PC4
 ```
 
-**Routing Configuration:**
-```
-ASA Gi1/3 → 50.50.50.2
-    ↓
-Router4 → 50.50.50.1
-    ↓
-INTERNET (Simulated)
-```
+**Router Configuration:**
+| Interface | IP Address | Connected To | OSPF Network |
+|-----------|------------|--------------|--------------|
+| Gi0/0 | 10.10.10.1 | PC4 | 10.10.10.0/24 |
+| Gi0/1 | 20.20.20.2 | OSPF Backbone | 20.20.20.0/24 |
 
-**Purpose:** Internet gateway, external communication, ISP connection point
+**Purpose:** Secondary user segment with dynamic routing capability
 
 ---
 
@@ -231,9 +230,9 @@ Purpose:          Inter-router communication
 **OSPF Neighbors:**
 | Router | Interface | IP Address | OSPF Priority | State |
 |--------|-----------|------------|---------------|-------|
-| Router1 | Fa0/1 | 20.20.20.1 | 1 | FULL |
-| Router2 | Fa0/1 | 20.20.20.2 | 1 | FULL |
-| Router3 | Fa0/1 | 20.20.20.3 | 1 | FULL |
+| Router0 (OUTSIDE) | Gi0/0 | 20.20.20.1 | 1 | FULL |
+| Router1 (User Net) | Gi0/1 | 20.20.20.2 | 1 | FULL |
+| Router2 (Backbone) | Gi0/1 | 20.20.20.3 | 1 | FULL |
 
 **Purpose:** Dynamic routing backbone, OSPF adjacency, route distribution
 
@@ -260,15 +259,15 @@ PERIMETER(config)# domain-name enterprise.local
 PERIMETER(config)# enable password Str0ngP@ss123
 ```
 
-#### Step 2: Interface Configuration (IN Zone)
+#### Step 2: Interface Configuration (INSIDE Zone)
 
 ```cisco
 PERIMETER(config)# interface GigabitEthernet1/1
-PERIMETER(config-if)# nameif IN
-INFO: Security level for "IN" set to 0 by default.
+PERIMETER(config-if)# nameif inside
+INFO: Security level for "inside" set to 100 by default.
 
-PERIMETER(config-if)# security-level 10
-PERIMETER(config-if)# ip address 192.168.100.1 255.255.255.128
+PERIMETER(config-if)# security-level 100
+PERIMETER(config-if)# ip address 192.168.10.1 255.255.255.0
 PERIMETER(config-if)# description ** Internal LAN - Trusted Zone **
 PERIMETER(config-if)# no shutdown
 PERIMETER(config-if)# exit
@@ -281,10 +280,10 @@ PERIMETER(config)# show interface GigabitEthernet1/1
 
 ```cisco
 PERIMETER(config)# interface GigabitEthernet1/2
-PERIMETER(config-if)# nameif DMZ
-INFO: Security level for "DMZ" set to 0 by default.
+PERIMETER(config-if)# nameif dmz
+INFO: Security level for "dmz" set to 0 by default.
 
-PERIMETER(config-if)# security-level 20
+PERIMETER(config-if)# security-level 50
 PERIMETER(config-if)# ip address 172.16.10.1 255.255.255.0
 PERIMETER(config-if)# description ** DMZ Zone - Server Farm **
 PERIMETER(config-if)# no shutdown
@@ -294,16 +293,16 @@ PERIMETER(config-if)# exit
 PERIMETER(config)# show nameif
 ```
 
-#### Step 4: Interface Configuration (OUT Zone)
+#### Step 4: Interface Configuration (OUTSIDE Zone)
 
 ```cisco
 PERIMETER(config)# interface GigabitEthernet1/3
-PERIMETER(config-if)# nameif OUT
-INFO: Security level for "OUT" set to 0 by default.
+PERIMETER(config-if)# nameif outside
+INFO: Security level for "outside" set to 0 by default.
 
-PERIMETER(config-if)# security-level 5
-PERIMETER(config-if)# ip address 50.50.50.2 255.255.255.0
-PERIMETER(config-if)# description ** External Network - Internet Gateway **
+PERIMETER(config-if)# security-level 0
+PERIMETER(config-if)# ip address 192.168.100.1 255.255.255.0
+PERIMETER(config-if)# description ** External Network - OSPF Connection **
 PERIMETER(config-if)# no shutdown
 PERIMETER(config-if)# exit
 ```
@@ -311,112 +310,130 @@ PERIMETER(config-if)# exit
 #### Step 5: Static Routing Configuration
 
 ```cisco
-! Default route to Internet
-PERIMETER(config)# route OUT 0.0.0.0 0.0.0.0 50.50.50.1 1
+! Default route to OSPF backbone
+PERIMETER(config)# route outside 0.0.0.0 0.0.0.0 192.168.100.254 1
 
-! Route to OSPF networks via OUT interface
-PERIMETER(config)# route OUT 10.10.10.0 255.255.255.0 50.50.50.1
-PERIMETER(config)# route OUT 20.20.20.0 255.255.255.0 50.50.50.1
+! Route to User Network via OSPF
+PERIMETER(config)# route outside 10.10.10.0 255.255.255.0 192.168.100.254
+PERIMETER(config)# route outside 20.20.20.0 255.255.255.0 192.168.100.254
 
 ! Verify routing table
 PERIMETER# show route
 
-Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
-       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area
-       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
-       E1 - OSPF external type 1, E2 - OSPF external type 2, V - VPN
-       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
-       ia - IS-IS inter area, * - candidate default, U - per-user static route
-       o - ODR, P - periodic downloaded static route, + - replicated route
+Codes: L - local, C - connected, S - static
+       
+Gateway of last resort is 192.168.100.254 to network 0.0.0.0
 
-Gateway of last resort is 50.50.50.1 to network 0.0.0.0
-
-S*    0.0.0.0 0.0.0.0 [1/0] via 50.50.50.1, OUT
-C     50.50.50.0 255.255.255.0 is directly connected, OUT
-L     50.50.50.2 255.255.255.255 is directly connected, OUT
-S     10.10.10.0 255.255.255.0 [1/0] via 50.50.50.1, OUT
-S     20.20.20.0 255.255.255.0 [1/0] via 50.50.50.1, OUT
-C     172.16.10.0 255.255.255.0 is directly connected, DMZ
-L     172.16.10.1 255.255.255.255 is directly connected, DMZ
-C     192.168.100.0 255.255.255.128 is directly connected, IN
-L     192.168.100.1 255.255.255.255 is directly connected, IN
+S*    0.0.0.0 0.0.0.0 [1/0] via 192.168.100.254, outside
+C     192.168.100.0 255.255.255.0 is directly connected, outside
+L     192.168.100.1 255.255.255.255 is directly connected, outside
+S     10.10.10.0 255.255.255.0 [1/0] via 192.168.100.254, outside
+S     20.20.20.0 255.255.255.0 [1/0] via 192.168.100.254, outside
+C     172.16.10.0 255.255.255.0 is directly connected, dmz
+L     172.16.10.1 255.255.255.255 is directly connected, dmz
+C     192.168.10.0 255.255.255.0 is directly connected, inside
+L     192.168.10.1 255.255.255.255 is directly connected, inside
 ```
 
 #### Step 6: NAT Configuration
 
 ```cisco
 ! Create network object for internal network
-PERIMETER(config)# object network IN-NETWORK
-PERIMETER(config-network-object)# subnet 192.168.100.0 255.255.255.128
-PERIMETER(config-network-object)# nat (IN,OUT) dynamic interface
+PERIMETER(config)# object network INSIDE-NETWORK
+PERIMETER(config-network-object)# subnet 192.168.10.0 255.255.255.0
+PERIMETER(config-network-object)# nat (inside,outside) dynamic interface
 PERIMETER(config-network-object)# exit
 
 ! Create network object for DMZ network
 PERIMETER(config)# object network DMZ-NETWORK
 PERIMETER(config-network-object)# subnet 172.16.10.0 255.255.255.0
-PERIMETER(config-network-object)# nat (DMZ,OUT) dynamic interface
+PERIMETER(config-network-object)# nat (dmz,outside) dynamic interface
 PERIMETER(config-network-object)# exit
 
 ! Verify NAT configuration
 PERIMETER# show nat
 Manual NAT Policies (Section 1)
-1 (IN) to (OUT) source dynamic IN-NETWORK interface
+1 (inside) to (outside) source dynamic INSIDE-NETWORK interface
     translate_hits = 0, untranslate_hits = 0
-2 (DMZ) to (OUT) source dynamic DMZ-NETWORK interface
+2 (dmz) to (outside) source dynamic DMZ-NETWORK interface
     translate_hits = 0, untranslate_hits = 0
+```
+
+#### Step 7: ICMP Inspection & ACL Configuration
+
+```cisco
+! Enable ICMP inspection
+PERIMETER(config)# policy-map global_policy
+PERIMETER(config-pmap)# class inspection_default
+PERIMETER(config-pmap-c)# inspect icmp
+PERIMETER(config-pmap-c)# exit
+PERIMETER(config-pmap)# exit
+
+! Configure ACLs to permit ICMP
+PERIMETER(config)# access-list INSIDE-IN extended permit icmp any any
+PERIMETER(config)# access-list DMZ-IN extended permit icmp any any
+PERIMETER(config)# access-list OUTSIDE-IN extended permit icmp any any
+
+! Apply ACLs to interfaces
+PERIMETER(config)# access-group INSIDE-IN in interface inside
+PERIMETER(config)# access-group DMZ-IN in interface dmz
+PERIMETER(config)# access-group OUTSIDE-IN in interface outside
 ```
 
 ---
 
 ### 🔄 **Part 2: OSPF Router Configuration**
 
-#### Router 1 Configuration (192.168.100.0/25 Segment)
+#### Router 0 Configuration (OUTSIDE Connection)
 
 ```cisco
 Router> enable
 Router# configure terminal
-Router(config)# hostname CORE-ROUTER-1
+Router(config)# hostname Router0
 
 ! Configure interfaces
-Router(config)# interface FastEthernet0/0
-Router(config-if)# ip address 192.168.100.254 255.255.255.128
-Router(config-if)# description ** Connection to Internal LAN **
+Router(config)# interface GigabitEthernet0/0
+Router(config-if)# ip address 20.20.20.1 255.255.255.0
+Router(config-if)# description ** OSPF Backbone Area 0 **
 Router(config-if)# no shutdown
 Router(config-if)# exit
 
-Router(config)# interface FastEthernet0/1
-Router(config-if)# ip address 20.20.20.1 255.255.255.0
-Router(config-if)# description ** OSPF Backbone Area 0 **
+Router(config)# interface GigabitEthernet0/1
+Router(config-if)# ip address 192.168.100.254 255.255.255.0
+Router(config-if)# description ** Connection to ASA OUTSIDE **
 Router(config-if)# no shutdown
 Router(config-if)# exit
 
 ! Configure OSPF
 Router(config)# router ospf 10
 Router(config-router)# router-id 1.1.1.1
-Router(config-router)# network 192.168.100.0 0.0.0.127 area 0
+Router(config-router)# network 192.168.100.0 0.0.0.255 area 0
 Router(config-router)# network 20.20.20.0 0.0.0.255 area 0
-Router(config-router)# passive-interface FastEthernet0/0
+Router(config-router)# passive-interface GigabitEthernet0/1
 Router(config-router)# exit
+
+! Configure default route to ASA
+Router(config)# ip route 0.0.0.0 0.0.0.0 192.168.100.1
 
 ! Save configuration
 Router# write memory
 ```
 
-#### Router 2 Configuration (10.10.10.0/24 Segment)
+#### Router 1 Configuration (User Network)
 
 ```cisco
 Router> enable
 Router# configure terminal
-Router(config)# hostname USER-ROUTER-2
+Router(config)# hostname Router1
 
 ! Configure interfaces
-Router(config)# interface FastEthernet0/0
+Router(config)# interface GigabitEthernet0/0
 Router(config-if)# ip address 10.10.10.1 255.255.255.0
 Router(config-if)# description ** User Network Segment **
 Router(config-if)# no shutdown
 Router(config-if)# exit
 
-Router(config)# interface FastEthernet0/1
+Router(config)# interface GigabitEthernet0/1
 Router(config-if)# ip address 20.20.20.2 255.255.255.0
 Router(config-if)# description ** OSPF Backbone Area 0 **
 Router(config-if)# no shutdown
@@ -424,36 +441,36 @@ Router(config-if)# exit
 
 ! Configure OSPF
 Router(config)# router ospf 10
-Router(config-router)# router-id 2.2.2.2
+Router(config-router)# router-id 2.2.2.1
 Router(config-router)# network 10.10.10.0 0.0.0.255 area 0
 Router(config-router)# network 20.20.20.0 0.0.0.255 area 0
-Router(config-router)# passive-interface FastEthernet0/0
+Router(config-router)# passive-interface GigabitEthernet0/0
 Router(config-router)# exit
 
 ! Configure default route
-Router(config)# ip route 0.0.0.0 0.0.0.0 20.20.20.3
+Router(config)# ip route 0.0.0.0 0.0.0.0 20.20.20.1
 
 ! Save configuration
 Router# write memory
 ```
 
-#### Router 3 Configuration (OSPF Backbone)
+#### Router 2 Configuration (Backbone Router)
 
 ```cisco
 Router> enable
 Router# configure terminal
-Router(config)# hostname BACKBONE-ROUTER-3
+Router(config)# hostname Router2
 
 ! Configure interfaces
-Router(config)# interface FastEthernet0/0
+Router(config)# interface GigabitEthernet0/0
 Router(config-if)# ip address 20.20.20.3 255.255.255.0
 Router(config-if)# description ** OSPF Backbone Area 0 **
 Router(config-if)# no shutdown
 Router(config-if)# exit
 
-Router(config)# interface FastEthernet0/1
+Router(config)# interface GigabitEthernet0/1
 Router(config-if)# ip address 50.50.50.3 255.255.255.0
-Router(config-if)# description ** Connection to ASA OUT Zone **
+Router(config-if)# description ** Connection to Internet (Simulated) **
 Router(config-if)# no shutdown
 Router(config-if)# exit
 
@@ -493,15 +510,15 @@ Network Type:        Broadcast
 ### OSPF Network Advertisement
 
 ```cisco
-! Router 1 advertises:
-network 192.168.100.0 0.0.0.127 area 0
+! Router 0 (OUTSIDE) advertises:
+network 192.168.100.0 0.0.0.255 area 0
 network 20.20.20.0 0.0.0.255 area 0
 
-! Router 2 advertises:
+! Router 1 (User Network) advertises:
 network 10.10.10.0 0.0.0.255 area 0
 network 20.20.20.0 0.0.0.255 area 0
 
-! Router 3 advertises:
+! Router 2 (Backbone) advertises:
 network 20.20.20.0 0.0.0.255 area 0
 ```
 
@@ -512,83 +529,42 @@ network 20.20.20.0 0.0.0.255 area 0
 Router# show ip ospf neighbor
 
 Neighbor ID     Pri   State           Dead Time   Address         Interface
-2.2.2.2          1   FULL/DR         00:00:35    20.20.20.2      FastEthernet0/1
-3.3.3.3          1   FULL/BDR        00:00:38    20.20.20.3      FastEthernet0/1
+2.2.2.1          1   FULL/DR         00:00:35    20.20.20.2      GigabitEthernet0/0
+3.3.3.3          1   FULL/BDR        00:00:38    20.20.20.3      GigabitEthernet0/0
 
 ! View OSPF database
 Router# show ip ospf database
 
-            OSPF Router with ID (1.1.1.1) (Process ID 10)
-
-                Router Link States (Area 0)
-
-Link ID         ADV Router      Age         Seq#       Checksum Link count
-1.1.1.1         1.1.1.1         245         0x80000003 0x00ABC1 2
-2.2.2.2         2.2.2.2         180         0x80000004 0x00DEF2 2
-3.3.3.3         3.3.3.3         220         0x80000002 0x001234 2
-
 ! View OSPF routes
 Router# show ip route ospf
-O    10.10.10.0/24 [110/2] via 20.20.20.2, 00:15:23, FastEthernet0/1
-O    172.16.10.0/24 [110/3] via 20.20.20.3, 00:10:45, FastEthernet0/1
+O    10.10.10.0/24 [110/2] via 20.20.20.2, 00:15:23, GigabitEthernet0/0
 
 ! View OSPF interface details
-Router# show ip ospf interface FastEthernet0/1
-FastEthernet0/1 is up, line protocol is up
-  Internet address is 20.20.20.1/24, Area 0
-  Process ID 10, Router ID 1.1.1.1, Network Type BROADCAST, Cost: 1
-  Transmit Delay is 1 sec, State DR, Priority 1
-  Designated Router (ID) 1.1.1.1, Interface address 20.20.20.1
-  Backup Designated Router (ID) 2.2.2.2, Interface address 20.20.20.2
-  Timer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5
-    Hello due in 00:00:08
-  Index 1/1, flood queue length 0
-  Next 0x0(0)/0x0(0)
-  Last flood scan length is 1, maximum is 1
-  Last flood scan time is 0 msec, maximum is 0 msec
-  Neighbor Count is 2, Adjacent neighbor count is 2
-    Adjacent with neighbor 2.2.2.2 (Backup Designated Router)
-    Adjacent with neighbor 3.3.3.3
-  Suppress hello for 0 neighbor(s)
+Router# show ip ospf interface GigabitEthernet0/0
 
 ! View OSPF protocol information
 Router# show ip protocols
-Routing Protocol is "ospf 10"
-  Outgoing update filter list for all interfaces is not set
-  Incoming update filter list for all interfaces is not set
-  Router ID 1.1.1.1
-  Number of areas in this router is 1. 1 normal 0 stub 0 nssa
-  Maximum path: 4
-  Routing for Networks:
-    192.168.100.0 0.0.0.127 area 0
-    20.20.20.0 0.0.0.255 area 0
-  Passive Interface(s):
-    FastEthernet0/0
-  Routing Information Sources:
-    Gateway         Distance      Last Update
-    2.2.2.2              110      00:15:23
-    3.3.3.3              110      00:10:45
-  Distance: (default is 110)
 ```
 
 ---
 
 ## 🖥️ CLI Configuration Screenshots
 
-<div align="center">
-  <img src="assets/asa-initial-config.png" alt="ASA Initial Configuration" width="850"/>
-  <p><em>ASA hostname, password, and basic setup</em></p>
-</div>
+### ASA Firewall Configuration
+![ASA CLI Configuration](assets/CLI.png)
+*ASA hostname, password, and interface setup with security levels*
 
-<div align="center">
-  <img src="assets/CLI.png" alt="ASA Interface Configuration" width="850"/>
-  <p><em>Three-zone interface configuration with security levels</em></p>
-</div>
+### ASA Routing Configuration  
+![ASA Routing](assets/CLI1.png)
+*Static routes configuration for OSPF network access*
 
-<div align="center">
-  <img src="assets/CLI1.png" alt="ASA Static Routing" width="850"/>
-  <p><em>Static routes configuration for OSPF network access</em></p>
-</div>
+### Router OSPF Configuration
+![Router OSPF Setup](assets/CLI2.png)
+*Router interface and OSPF protocol configuration*
+
+### ICMP Fix Configuration
+![ICMP Fix](assets/CLI3.png)
+*ACL and policy-map configuration to enable ICMP inspection*
 
 ---
 
@@ -600,47 +576,37 @@ Routing Protocol is "ospf 10"
 ┌─────────────────────────────────────────────────────────────┐
 │  Network Testing Matrix                                     │
 ├─────────────────────────────────────────────────────────────┤
-│  ✓ Internal LAN Connectivity (192.168.100.0/25)           │
+│  ✓ Internal LAN Connectivity (192.168.10.0/24)            │
 │  ✓ DMZ Server Accessibility (172.16.10.0/24)              │
-│  ✓ Internet Gateway Connectivity (50.50.50.0/24)          │
+│  ✓ OUTSIDE Network Connectivity (192.168.100.0/24)        │
 │  ✓ OSPF Neighbor Adjacency (20.20.20.0/24)                │
 │  ✓ User Network Routing (10.10.10.0/24)                   │
-│  ✓ Inter-VLAN Routing via ASA                              │
+│  ✓ Inter-Zone Routing via ASA                              │
 │  ✓ NAT/PAT Functionality                                   │
 │  ✓ Security Policy Enforcement                             │
+│  ✓ ICMP Inspection & ACL Verification                      │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ### Scenario 1: Internal LAN Connectivity
 
-**Test Objective:** Verify connectivity within Internal LAN segment
+**Test Objective:** Verify connectivity within Internal LAN segment (192.168.10.0/24)
 
 ```bash
-# From PC0 (192.168.100.2)
-C:\> ping 192.168.100.3
-Pinging 192.168.100.3 with 32 bytes of data:
+# From PC0 (192.168.10.2)
+C:\> ping 192.168.10.3
 
-Reply from 192.168.100.3: bytes=32 time=1ms TTL=128
-Reply from 192.168.100.3: bytes=32 time<1ms TTL=128
-Reply from 192.168.100.3: bytes=32 time<1ms TTL=128
-Reply from 192.168.100.3: bytes=32 time<1ms TTL=128
+Pinging 192.168.10.3 with 32 bytes of data:
+Reply from 192.168.10.3: bytes=32 time=1ms TTL=128
+Reply from 192.168.10.3: bytes=32 time<1ms TTL=128
 
-Ping statistics for 192.168.100.3:
-    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
-Approximate round trip times in milli-seconds:
-    Minimum = 0ms, Maximum = 1ms, Average = 0ms
+Ping statistics for 192.168.10.3:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)
 
 # Ping ASA inside interface
-C:\> ping 192.168.100.1
-Pinging 192.168.100.1 with 32 bytes of data:
+C:\> ping 192.168.10.1
 
-Reply from 192.168.100.1: bytes=32 time=1ms TTL=255
-Reply from 192.168.100.1: bytes=32 time<1ms TTL=255
-Reply from 192.168.100.1: bytes=32 time<1ms TTL=255
-Reply from 192.168.100.1: bytes=32 time<1ms TTL=255
-
-Ping statistics for 192.168.100.1:
-    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Reply from 192.168.10.1: bytes=32 time=1ms TTL=255
 ```
 
 **Expected Result:** ✅ 100% success rate
@@ -649,29 +615,20 @@ Ping statistics for 192.168.100.1:
 
 ### Scenario 2: DMZ Server Access from Internal Network
 
-**Test Objective:** Verify IN → DMZ traffic flow
+**Test Objective:** Verify INSIDE → DMZ traffic flow
 
 ```bash
-# From PC0 (192.168.100.2) to Server1 (172.16.10.2)
+# From PC0 (192.168.10.2) to Server1 (172.16.10.2)
 C:\> ping 172.16.10.2
-Pinging 172.16.10.2 with 32 bytes of data:
 
+Pinging 172.16.10.2 with 32 bytes of data:
 Reply from 172.16.10.2: bytes=32 time=2ms TTL=127
-Reply from 172.16.10.2: bytes=32 time=1ms TTL=127
-Reply from 172.16.10.2: bytes=32 time=1ms TTL=127
-Reply from 172.16.10.2: bytes=32 time=1ms TTL=127
 
 Ping statistics for 172.16.10.2:
-    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
-
-# Test HTTP access to web server
-C:\> telnet 172.16.10.2 80
-Trying 172.16.10.2...
-Connected to 172.16.10.2.
-Escape character is '^]'.
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)
 ```
 
-**Expected Result:** ✅ Access granted (Security 10 → Security 20)
+**Expected Result:** ✅ Access granted (Security 100 → Security 50)
 
 ---
 
@@ -680,17 +637,75 @@ Escape character is '^]'.
 **Test Objective:** Verify connectivity to OSPF networks
 
 ```bash
-# From PC0 to User Network (10.10.10.0/24)
+# From PC0 (192.168.10.2) to User Network (10.10.10.0/24)
 C:\> ping 10.10.10.2
-Pinging 10.10.10.2 with 32 bytes of data:
 
+Pinging 10.10.10.2 with 32 bytes of data:
 Reply from 10.10.10.2: bytes=32 time=5ms TTL=126
-Reply from 10.10.10.2: bytes=32 time=3ms TTL=126
-Reply from 10.10.10.2: bytes=32 time=3ms TTL=126
-Reply from 10.10.10.2: bytes=32 time=4ms TTL=126
 
 Ping statistics for 10.10.10.2:
-    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)
 
 # Traceroute to show path
-C:\> tracert
+C:\> tracert 10.10.10.2
+
+Tracing route to 10.10.10.2:
+  1    1 ms    <1 ms   <1 ms  192.168.10.1 (ASA Inside)
+  2    2 ms     2 ms    2 ms  192.168.100.254 (Router0)
+  3    3 ms     3 ms    3 ms  20.20.20.2 (Router1)
+  4    4 ms     4 ms    4 ms  10.10.10.2 (PC4)
+```
+
+**Expected Result:** ✅ Successful routing through OSPF backbone
+
+---
+
+## 📊 Network Diagram Summary
+
+### IP Address Allocation Table
+
+| Zone | Device | Interface | IP Address | Subnet Mask | Gateway |
+|------|--------|-----------|------------|-------------|---------|
+| **INSIDE** | ASA | Gi1/1 | 192.168.10.1 | 255.255.255.0 | - |
+| INSIDE | PC0 | Fa0 | 192.168.10.2 | 255.255.255.0 | 192.168.10.1 |
+| INSIDE | PC1 | Fa0 | 192.168.10.3 | 255.255.255.0 | 192.168.10.1 |
+| INSIDE | PC2 | Fa0 | 192.168.10.4 | 255.255.255.0 | 192.168.10.1 |
+| INSIDE | Switch | VLAN1 | 192.168.10.254 | 255.255.255.0 | 192.168.10.1 |
+| **DMZ** | ASA | Gi1/2 | 172.16.10.1 | 255.255.255.0 | - |
+| DMZ | Server1 | Fa0 | 172.16.10.2 | 255.255.255.0 | 172.16.10.1 |
+| DMZ | Server2 | Fa0 | 172.16.10.3 | 255.255.255.0 | 172.16.10.1 |
+| DMZ | Server3 | Fa0 | 172.16.10.4 | 255.255.255.0 | 172.16.10.1 |
+| **OUTSIDE** | ASA | Gi1/3 | 192.168.100.1 | 255.255.255.0 | - |
+| OUTSIDE | Router0 | Gi0/1 | 192.168.100.254 | 255.255.255.0 | 192.168.100.1 |
+| OUTSIDE | Router0 | Gi0/0 | 20.20.20.1 | 255.255.255.0 | - |
+| **User Net** | Router1 | Gi0/0 | 10.10.10.1 | 255.255.255.0 | - |
+| User Net | Router1 | Gi0/1 | 20.20.20.2 | 255.255.255.0 | - |
+| User Net | PC4 | Fa0 | 10.10.10.2 | 255.255.255.0 | 10.10.10.1 |
+| **Backbone** | Router2 | Gi0/0 | 20.20.20.3 | 255.255.255.0 | - |
+| Backbone | Router2 | Gi0/1 | 50.50.50.3 | 255.255.255.0 | 50.50.50.1 |
+
+---
+
+## 📚 Key Features
+
+### Security Features
+- ✅ Zone-based firewall architecture (INSIDE/DMZ/OUTSIDE)
+- ✅ Stateful packet inspection
+- ✅ NAT/PAT for internal networks
+- ✅ DMZ isolation with security level 50
+- ✅ ACL-based traffic filtering
+- ✅ ICMP inspection enabled
+
+### Routing Features
+- ✅ OSPF Area 0 dynamic routing
+- ✅ Static route configuration to OSPF backbone
+- ✅ Default route propagation
+- ✅ Route redistribution
+- ✅ Multi-path routing support
+
+### Network Segmentation
+- ✅ 3 security zones (INSIDE/DMZ/OUTSIDE)
+- ✅ 5 IP network segments
+- ✅ VLAN segregation
+- ✅ Server farm isolation
+- ✅
